@@ -4,9 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music Pong</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id='musicPong' width='500' height='500'></canvas>
+  
+  <input type="file" id="file-input" accept="audio/*,video/*,image/*" />
+  <canvas id='musicPong'></canvas>
+  <h3 id="name"></h3>
+  <audio id="audio" controls></audio>
+  <div id="background"></div>
 
   <script src='game.js'></script>
 </body>

@@ -1,7 +1,18 @@
 const canvas = document.getElementById('musicPong');
 const ctx = canvas.getContext('2d');
 
-canvas.style.border = '1px solid red';
+const h3 = document.getElementById('name');
+const audio = document.getElementById("audio");
+const file = document.getElementById("file-input");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
+
+
+// canvas.style.border = '1px solid red';
 
 const PADDLE_WIDTH = 100;
 const PADDLE_MARGIN_BOTTOM = 50;
@@ -11,8 +22,8 @@ let leftArrow = false;
 let rightArrow = false;
 
 const paddle = {
-  x: canvas.width/2 - PADDLE_WIDTH/2,
-  y: canvas.height - PADDLE_MARGIN_BOTTOM - PADDLE_HEIGHT,
+  x: WIDTH/2 - PADDLE_WIDTH/2,
+  y: HEIGHT - PADDLE_MARGIN_BOTTOM - PADDLE_HEIGHT,
   width: PADDLE_WIDTH,
   height: PADDLE_HEIGHT,
   dx: 5
@@ -43,7 +54,7 @@ document.addEventListener('keyup', (e) => {
 });
 
 function movePaddle() {
-  if (rightArrow && paddle.x + paddle.width < canvas.width) {
+  if (rightArrow && paddle.x + paddle.width < WIDTH) {
     paddle.x += paddle.dx;
   } else if (leftArrow && paddle.x > 0) {
     paddle.x -= paddle.dx;
@@ -51,7 +62,7 @@ function movePaddle() {
 }
 
 const ball = {
-  x: canvas.width/2,
+  x: WIDTH/2,
   y: paddle.y - BALL_RADIUS,
   radius: BALL_RADIUS,
   speed: 4,
@@ -83,7 +94,7 @@ function draw() {
 }
 
 function ballWallCollision() {
-  if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+  if (ball.x + ball.radius > WIDTH || ball.x - ball.radius < 0) {
     ball.dx = - ball.dx;
   }
 
@@ -91,13 +102,13 @@ function ballWallCollision() {
     ball.dy = -ball.dy;
   }
 
-  if (ball.y + ball.radius > canvas.height) {
+  if (ball.y + ball.radius > HEIGHT) {
     resetBall();
   }
 }
 
 function resetBall() {
-  ball.x = canvas.width/2;
+  ball.x = WIDTH/2;
   ball.y = paddle.y - BALL_RADIUS;
   ball.dx = 3 * (Math.random() * 2 - 1);
   ball.dy = -3
@@ -126,15 +137,95 @@ function update() {
   ballPaddleCollision();
 }
 
-function loop() {
-  
-  
-  ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+file.onchange = function() {
 
-  draw();
-  update();
-  requestAnimationFrame(loop)
-}
+  const files = this.files;
+  console.log('FILES[0]: ', files[0]);
+  audio.src = URL.createObjectURL(files[0]);
 
-loop();
+  const name = files[0].name;
+  h3.innerText = `${name}`;
+
+  const audioContext = new AudioContext();
+  const src = audioContext.createMediaElementSource(audio);
+  const analyser = audioContext.createAnalyser();
+
+  src.connect(analyser);
+  analyser.connect(audioContext.destination);
+  analyser.fftSize = 16384;
+
+  const bufferLength = analyser.frequencyBinCount;
+
+  const dataArray = new Uint8Array(bufferLength);
+  console.log('DATA-ARRAY: ', dataArray)
+
+  const barWidth = (WIDTH / bufferLength) * 13;
+
+  let barHeight;
+  let x = 0;
+
+  function renderFrame() {
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    requestAnimationFrame(renderFrame);
+
+    x = 0;
+
+    analyser.getByteFrequencyData(dataArray);
+
+
+    let bars = 118;
+
+    for (let i = 0; i < bars; i++) {
+      barHeight = (dataArray[i] * 2.5);
+
+      const rgbColor = (() => {
+        switch (true) {
+          case dataArray[i] > 210:
+            return {
+              r: 250,
+              g: 0,
+              b: 255
+            }
+          case dataArray[i] > 200:
+            return { // yellow
+              r: 250,
+              g: 255,
+              b: 0,
+            }
+          case dataArray[i] > 190:
+            return { // yellow/green
+              r: 204,
+              g: 255,
+              b: 0
+            }       
+          case dataArray[i] > 180:
+            return { // blue/green
+              r: 0,
+              g: 219,
+              b: 131
+            }
+          default:
+            return { // light blue
+              r: 0,
+              g: 199,
+              b: 255,
+            }
+        }
+      })();
+
+      ctx.fillStyle = `rgb(${rgbColor.r},${rgbColor.g},${rgbColor.b})`;
+      ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
+
+      x += barWidth + 10
+    };
+
+    draw();
+    update();
+  }
+
+  audio.play();
+  renderFrame();
+};
+
