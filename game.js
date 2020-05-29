@@ -7,144 +7,108 @@ const file = document.getElementById('file-input');
 document.getElementById("listen").addEventListener("click", playAudio);
 
 async function playAudio() {
-  // var audio = new Audio('http://sandytian.ca/audio/bensound-dubstep.mp3');  
-  // console.log(audio)
-  // audio.type = 'audio/wav';
+ 
+  var audio = document.createElement('audio');
 
-  // try {
-  //   await audio.play();
-  //   console.log('Playing...');
-  // } catch (err) {
-  //   console.log('Failed to play...' + err);
-  // }
+  // Define the URL of the MP3 audio file
+  audio.src = "http://sandytian.ca/audio/bensound-dubstep.mp3";
+  
+  // Once the metadata has been loaded, display the duration in the console
+  audio.addEventListener('loadedmetadata', function(){
+      // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
+      var duration = audio.duration;
+  
+      // example 12.3234 seconds
+      console.log("The duration of the song is of: " + duration + " seconds");
+      // Alternatively, just display the integer value with
+      // parseInt(duration)
+      // 12 seconds
 
-    // Request URL of the Audio File
-    var mp3file = "http://sandytian.ca/audio/bensound-dubstep.mp3";
+      
 
-    // Create an instance of AudioContext
-    var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioContext = new AudioContext();
+      const src = audioContext.createMediaElementSource(audio);
+      const analyser = audioContext.createAnalyser();
 
-    // Open an Http Request
-    var request = new XMLHttpRequest();
-    request.open('GET', mp3file, true);
-    request.responseType = 'arraybuffer';
-    request.onload = function() {
-      console.log(request.response)
-        audioContext.decodeAudioData(request.response, function(buffer) {
-            // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
-            var duration = buffer.duration;
+      src.connect(analyser);
+      analyser.connect(audioContext.destination);
+      analyser.fftSize = 16384;
 
-            // example 12.3234 seconds
-            console.log("The duration of the song is of: " + duration + " seconds");
-            console.log(buffer)
-            // Alternatively, just display the integer value with
-            // parseInt(duration)
-            // 12 seconds
+      const bufferLength = analyser.frequencyBinCount;
 
-            const src = audioContext.createMediaElementSource(buffer);
-            console.log(src)
-        });
-        
+      const dataArray = new Uint8Array(bufferLength);
+      console.log('DATA-ARRAY: ', dataArray)
 
+      const barWidth = (WIDTH / bufferLength) * 13;
 
-        
-      // console.log(this.files)
+      let barHeight;
+      let x = 0;
 
-      // const files = this.files;
-      // console.log('FILES[0]: ', files[0]);
-      // audio.src = URL.createObjectURL(files[0]);
+      function renderFrame() {
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-      // console.log(files[0])
+        requestAnimationFrame(renderFrame);
 
-      // const name = files[0].name;
-      // h3.innerText = `${name}`;
+        x = 0;
 
-      // const audioContext = new AudioContext();
-      // const src = audioContext.createMediaElementSource(audio);
-      // const analyser = audioContext.createAnalyser();
-
-      // src.connect(analyser);
-      // analyser.connect(audioContext.destination);
-      // analyser.fftSize = 16384;
-
-      // const bufferLength = analyser.frequencyBinCount;
-
-      // const dataArray = new Uint8Array(bufferLength);
-      // console.log('DATA-ARRAY: ', dataArray)
-
-      // const barWidth = (WIDTH / bufferLength) * 13;
-
-      // let barHeight;
-      // let x = 0;
-
-      // function renderFrame() {
-      //   ctx.fillStyle = 'rgba(0,0,0,0.2)';
-      //   ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-      //   requestAnimationFrame(renderFrame);
-
-      //   x = 0;
-
-      //   analyser.getByteFrequencyData(dataArray);
+        analyser.getByteFrequencyData(dataArray);
 
 
-      //   let bars = 118;
+        let bars = 118;
 
-      //   for (let i = 0; i < bars; i++) {
-      //     barHeight = (dataArray[i] * 2.5);
+        for (let i = 0; i < bars; i++) {
+          barHeight = (dataArray[i] * 2.5);
 
-      //     const rgbColor = (() => {
-      //       switch (true) {
-      //         case dataArray[i] > 210:
-      //           return {
-      //             r: 250,
-      //             g: 0,
-      //             b: 255
-      //           }
-      //         case dataArray[i] > 200:
-      //           return { // yellow
-      //             r: 250,
-      //             g: 255,
-      //             b: 0,
-      //           }
-      //         case dataArray[i] > 190:
-      //           return { // yellow/green
-      //             r: 204,
-      //             g: 255,
-      //             b: 0
-      //           }       
-      //         case dataArray[i] > 180:
-      //           return { // blue/green
-      //             r: 0,
-      //             g: 219,
-      //             b: 131
-      //           }
-      //         default:
-      //           return { // light blue
-      //             r: 0,
-      //             g: 199,
-      //             b: 255,
-      //           }
-      //       }
-      //     })();
+          const rgbColor = (() => {
+            switch (true) {
+              case dataArray[i] > 210:
+                return {
+                  r: 250,
+                  g: 0,
+                  b: 255
+                }
+              case dataArray[i] > 200:
+                return { // yellow
+                  r: 250,
+                  g: 255,
+                  b: 0,
+                }
+              case dataArray[i] > 190:
+                return { // yellow/green
+                  r: 204,
+                  g: 255,
+                  b: 0
+                }       
+              case dataArray[i] > 180:
+                return { // blue/green
+                  r: 0,
+                  g: 219,
+                  b: 131
+                }
+              default:
+                return { // light blue
+                  r: 0,
+                  g: 199,
+                  b: 255,
+                }
+            }
+          })();
 
-      //     ctx.fillStyle = `rgb(${rgbColor.r},${rgbColor.g},${rgbColor.b})`;
-      //     ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
+          ctx.fillStyle = `rgb(${rgbColor.r},${rgbColor.g},${rgbColor.b})`;
+          ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
 
-      //     x += barWidth + 10
-      //   };
+          x += barWidth + 10
+        };
 
-      //   draw();
-      //   update();
-      // }
+        draw();
+        update();
+      }
 
-      // audio.play();
-      // renderFrame();
+      audio.play();
+      renderFrame();
+  },false);
 
-    };
-
-    // Start Request
-    request.send();
 }
 
 
