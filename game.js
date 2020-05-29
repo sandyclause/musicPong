@@ -2,8 +2,152 @@ const canvas = document.getElementById('musicPong');
 const ctx = canvas.getContext('2d');
 
 const h3 = document.getElementById('name');
-const audio = document.getElementById("audio");
-const file = document.getElementById("file-input");
+const file = document.getElementById('file-input');
+
+document.getElementById("listen").addEventListener("click", playAudio);
+
+async function playAudio() {
+  // var audio = new Audio('http://sandytian.ca/audio/bensound-dubstep.mp3');  
+  // console.log(audio)
+  // audio.type = 'audio/wav';
+
+  // try {
+  //   await audio.play();
+  //   console.log('Playing...');
+  // } catch (err) {
+  //   console.log('Failed to play...' + err);
+  // }
+
+    // Request URL of the Audio File
+    var mp3file = "http://sandytian.ca/audio/bensound-dubstep.mp3";
+
+    // Create an instance of AudioContext
+    var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Open an Http Request
+    var request = new XMLHttpRequest();
+    request.open('GET', mp3file, true);
+    request.responseType = 'arraybuffer';
+    request.onload = function() {
+      console.log(request.response)
+      const src = audioContext.createMediaElementSource(request.response);
+      console.log(src)
+        audioContext.decodeAudioData(request.response, function(buffer) {
+            // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
+            var duration = buffer.duration;
+
+            // example 12.3234 seconds
+            console.log("The duration of the song is of: " + duration + " seconds");
+            console.log(buffer)
+            // Alternatively, just display the integer value with
+            // parseInt(duration)
+            // 12 seconds
+
+        });
+        
+
+
+        
+      // console.log(this.files)
+
+      // const files = this.files;
+      // console.log('FILES[0]: ', files[0]);
+      // audio.src = URL.createObjectURL(files[0]);
+
+      // console.log(files[0])
+
+      // const name = files[0].name;
+      // h3.innerText = `${name}`;
+
+      // const audioContext = new AudioContext();
+      // const src = audioContext.createMediaElementSource(audio);
+      // const analyser = audioContext.createAnalyser();
+
+      // src.connect(analyser);
+      // analyser.connect(audioContext.destination);
+      // analyser.fftSize = 16384;
+
+      // const bufferLength = analyser.frequencyBinCount;
+
+      // const dataArray = new Uint8Array(bufferLength);
+      // console.log('DATA-ARRAY: ', dataArray)
+
+      // const barWidth = (WIDTH / bufferLength) * 13;
+
+      // let barHeight;
+      // let x = 0;
+
+      // function renderFrame() {
+      //   ctx.fillStyle = 'rgba(0,0,0,0.2)';
+      //   ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      //   requestAnimationFrame(renderFrame);
+
+      //   x = 0;
+
+      //   analyser.getByteFrequencyData(dataArray);
+
+
+      //   let bars = 118;
+
+      //   for (let i = 0; i < bars; i++) {
+      //     barHeight = (dataArray[i] * 2.5);
+
+      //     const rgbColor = (() => {
+      //       switch (true) {
+      //         case dataArray[i] > 210:
+      //           return {
+      //             r: 250,
+      //             g: 0,
+      //             b: 255
+      //           }
+      //         case dataArray[i] > 200:
+      //           return { // yellow
+      //             r: 250,
+      //             g: 255,
+      //             b: 0,
+      //           }
+      //         case dataArray[i] > 190:
+      //           return { // yellow/green
+      //             r: 204,
+      //             g: 255,
+      //             b: 0
+      //           }       
+      //         case dataArray[i] > 180:
+      //           return { // blue/green
+      //             r: 0,
+      //             g: 219,
+      //             b: 131
+      //           }
+      //         default:
+      //           return { // light blue
+      //             r: 0,
+      //             g: 199,
+      //             b: 255,
+      //           }
+      //       }
+      //     })();
+
+      //     ctx.fillStyle = `rgb(${rgbColor.r},${rgbColor.g},${rgbColor.b})`;
+      //     ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
+
+      //     x += barWidth + 10
+      //   };
+
+      //   draw();
+      //   update();
+      // }
+
+      // audio.play();
+      // renderFrame();
+
+    };
+
+    // Start Request
+    request.send();
+}
+
+
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -139,9 +283,13 @@ function update() {
 
 file.onchange = function() {
 
+  console.log(this.files)
+
   const files = this.files;
   console.log('FILES[0]: ', files[0]);
   audio.src = URL.createObjectURL(files[0]);
+
+  console.log(files[0])
 
   const name = files[0].name;
   h3.innerText = `${name}`;
