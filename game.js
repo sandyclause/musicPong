@@ -4,23 +4,12 @@ const ctx = canvas.getContext('2d');
 const h3 = document.getElementById('name');
 const file = document.getElementById('file-input');
 
-document.getElementById("listen").addEventListener("click", playAudio);
+function init(source) {
+  console.log('fired')
+  audio.src = source;
 
-async function playAudio() {
- 
-  var audio = document.createElement('audio');
-
-  // Define the URL of the MP3 audio file
-  audio.src = "http://sandytian.ca/audio/bensound-dubstep.mp3";
-  
-  // Once the metadata has been loaded, display the duration in the console
-  audio.addEventListener('loadedmetadata', function(){
-    init();
-  },false);
-}
-
-function init() {
   const audioContext = new AudioContext();
+  console.log(audio)
   const src = audioContext.createMediaElementSource(audio);
   const analyser = audioContext.createAnalyser();
 
@@ -99,8 +88,27 @@ function init() {
     update();
   }
 
+  console.log(audio)
+
   audio.play();
   renderFrame();
+}
+
+document.getElementById("listen").addEventListener("click", playAudio);
+
+async function playAudio() {
+ 
+  var audio = document.createElement('audio');
+
+  // Define the URL of the MP3 audio file
+  audio.src = "http://sandytian.ca/audio/bensound-dubstep.mp3";
+  const source = "http://sandytian.ca/audio/bensound-dubstep.mp3";
+  
+  // Once the metadata has been loaded, display the duration in the console
+  audio.addEventListener('loadedmetadata', function(){
+
+    init(source);
+  },false);
 }
 
 canvas.width = window.innerWidth;
@@ -241,13 +249,13 @@ file.onchange = function() {
 
   const files = this.files;
   console.log('FILES[0]: ', files[0]);
-  audio.src = URL.createObjectURL(files[0]);
+  const source = URL.createObjectURL(files[0]);
 
   console.log(files[0])
 
   const name = files[0].name;
   h3.innerText = `${name}`;
 
-  init();
+  init(source);
 };
 
