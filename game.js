@@ -15,103 +15,93 @@ async function playAudio() {
   
   // Once the metadata has been loaded, display the duration in the console
   audio.addEventListener('loadedmetadata', function(){
-      // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
-      var duration = audio.duration;
-  
-      // example 12.3234 seconds
-      console.log("The duration of the song is of: " + duration + " seconds");
-      // Alternatively, just display the integer value with
-      // parseInt(duration)
-      // 12 seconds
-
-      
-
-      const audioContext = new AudioContext();
-      const src = audioContext.createMediaElementSource(audio);
-      const analyser = audioContext.createAnalyser();
-
-      src.connect(analyser);
-      analyser.connect(audioContext.destination);
-      analyser.fftSize = 16384;
-
-      const bufferLength = analyser.frequencyBinCount;
-
-      const dataArray = new Uint8Array(bufferLength);
-      console.log('DATA-ARRAY: ', dataArray)
-
-      const barWidth = (WIDTH / bufferLength) * 13;
-
-      let barHeight;
-      let x = 0;
-
-      function renderFrame() {
-        ctx.fillStyle = 'rgba(0,0,0,0.2)';
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-        requestAnimationFrame(renderFrame);
-
-        x = 0;
-
-        analyser.getByteFrequencyData(dataArray);
-
-
-        let bars = 118;
-
-        for (let i = 0; i < bars; i++) {
-          barHeight = (dataArray[i] * 2.5);
-
-          const rgbColor = (() => {
-            switch (true) {
-              case dataArray[i] > 210:
-                return {
-                  r: 250,
-                  g: 0,
-                  b: 255
-                }
-              case dataArray[i] > 200:
-                return { // yellow
-                  r: 250,
-                  g: 255,
-                  b: 0,
-                }
-              case dataArray[i] > 190:
-                return { // yellow/green
-                  r: 204,
-                  g: 255,
-                  b: 0
-                }       
-              case dataArray[i] > 180:
-                return { // blue/green
-                  r: 0,
-                  g: 219,
-                  b: 131
-                }
-              default:
-                return { // light blue
-                  r: 0,
-                  g: 199,
-                  b: 255,
-                }
-            }
-          })();
-
-          ctx.fillStyle = `rgb(${rgbColor.r},${rgbColor.g},${rgbColor.b})`;
-          ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
-
-          x += barWidth + 10
-        };
-
-        draw();
-        update();
-      }
-
-      audio.play();
-      renderFrame();
+    init();
   },false);
-
 }
 
+function init() {
+  const audioContext = new AudioContext();
+  const src = audioContext.createMediaElementSource(audio);
+  const analyser = audioContext.createAnalyser();
 
+  src.connect(analyser);
+  analyser.connect(audioContext.destination);
+  analyser.fftSize = 16384;
+
+  const bufferLength = analyser.frequencyBinCount;
+
+  const dataArray = new Uint8Array(bufferLength);
+  console.log('DATA-ARRAY: ', dataArray)
+
+  const barWidth = (WIDTH / bufferLength) * 13;
+
+  let barHeight;
+  let x = 0;
+
+  function renderFrame() {
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    requestAnimationFrame(renderFrame);
+
+    x = 0;
+
+    analyser.getByteFrequencyData(dataArray);
+
+
+    let bars = 118;
+
+    for (let i = 0; i < bars; i++) {
+      barHeight = (dataArray[i] * 2.5);
+
+      const rgbColor = (() => {
+        switch (true) {
+          case dataArray[i] > 210:
+            return {
+              r: 250,
+              g: 0,
+              b: 255
+            }
+          case dataArray[i] > 200:
+            return { // yellow
+              r: 250,
+              g: 255,
+              b: 0,
+            }
+          case dataArray[i] > 190:
+            return { // yellow/green
+              r: 204,
+              g: 255,
+              b: 0
+            }       
+          case dataArray[i] > 180:
+            return { // blue/green
+              r: 0,
+              g: 219,
+              b: 131
+            }
+          default:
+            return { // light blue
+              r: 0,
+              g: 199,
+              b: 255,
+            }
+        }
+      })();
+
+      ctx.fillStyle = `rgb(${rgbColor.r},${rgbColor.g},${rgbColor.b})`;
+      ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
+
+      x += barWidth + 10
+    };
+
+    draw();
+    update();
+  }
+
+  audio.play();
+  renderFrame();
+}
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -258,86 +248,6 @@ file.onchange = function() {
   const name = files[0].name;
   h3.innerText = `${name}`;
 
-  const audioContext = new AudioContext();
-  const src = audioContext.createMediaElementSource(audio);
-  const analyser = audioContext.createAnalyser();
-
-  src.connect(analyser);
-  analyser.connect(audioContext.destination);
-  analyser.fftSize = 16384;
-
-  const bufferLength = analyser.frequencyBinCount;
-
-  const dataArray = new Uint8Array(bufferLength);
-  console.log('DATA-ARRAY: ', dataArray)
-
-  const barWidth = (WIDTH / bufferLength) * 13;
-
-  let barHeight;
-  let x = 0;
-
-  function renderFrame() {
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-    requestAnimationFrame(renderFrame);
-
-    x = 0;
-
-    analyser.getByteFrequencyData(dataArray);
-
-
-    let bars = 118;
-
-    for (let i = 0; i < bars; i++) {
-      barHeight = (dataArray[i] * 2.5);
-
-      const rgbColor = (() => {
-        switch (true) {
-          case dataArray[i] > 210:
-            return {
-              r: 250,
-              g: 0,
-              b: 255
-            }
-          case dataArray[i] > 200:
-            return { // yellow
-              r: 250,
-              g: 255,
-              b: 0,
-            }
-          case dataArray[i] > 190:
-            return { // yellow/green
-              r: 204,
-              g: 255,
-              b: 0
-            }       
-          case dataArray[i] > 180:
-            return { // blue/green
-              r: 0,
-              g: 219,
-              b: 131
-            }
-          default:
-            return { // light blue
-              r: 0,
-              g: 199,
-              b: 255,
-            }
-        }
-      })();
-
-      ctx.fillStyle = `rgb(${rgbColor.r},${rgbColor.g},${rgbColor.b})`;
-      ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
-
-      x += barWidth + 10
-    };
-
-    draw();
-    update();
-  }
-
-  audio.play();
-  renderFrame();
+  init();
 };
 
