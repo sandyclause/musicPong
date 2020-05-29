@@ -30,8 +30,6 @@ async function playAudio() {
     request.responseType = 'arraybuffer';
     request.onload = function() {
       console.log(request.response)
-      const src = audioContext.createMediaElementSource(request.response);
-      console.log(src)
         audioContext.decodeAudioData(request.response, function(buffer) {
             // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
             var duration = buffer.duration;
@@ -43,6 +41,8 @@ async function playAudio() {
             // parseInt(duration)
             // 12 seconds
 
+            const src = audioContext.createMediaElementSource(buffer);
+            console.log(src)
         });
         
 
