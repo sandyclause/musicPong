@@ -21,28 +21,26 @@ function init(source) {
 
   const dataArray = new Uint8Array(bufferLength);
   console.log('DATA-ARRAY: ', dataArray)
-
-  const barWidth = (WIDTH / bufferLength) * 13;
-
+  
   let barHeight;
   let x = 0;
-
+  
   function renderFrame() {
     ctx.fillStyle = 'rgba(0,0,0,0.2)';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
+    
     requestAnimationFrame(renderFrame);
-
+    
     x = 0;
-
+    
     analyser.getByteFrequencyData(dataArray);
 
-
-    let bars = 118;
+    let bars = 100;
 
     for (let i = 0; i < bars; i++) {
       barHeight = (dataArray[i] * 2.5);
-
+      const barWidth = (WIDTH / bars);
+      
       const rgbColor = (() => {
         switch (true) {
           case dataArray[i] > 210:
@@ -81,7 +79,7 @@ function init(source) {
       ctx.fillStyle = `rgb(${rgbColor.r},${rgbColor.g},${rgbColor.b})`;
       ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
 
-      x += barWidth + 10
+      x += barWidth
     };
 
     draw();
@@ -104,7 +102,7 @@ async function playAudio() {
   audio.src = "http://sandytian.ca/audio/bensound-dubstep.mp3";
   const source = "http://sandytian.ca/audio/bensound-dubstep.mp3";
   
-  // Once the metadata has been loaded, display the duration in the console
+  // Once the metadata has been loaded
   audio.addEventListener('loadedmetadata', function(){
 
     init(source);
