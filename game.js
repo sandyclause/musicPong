@@ -4,15 +4,13 @@ const ctx = canvas.getContext('2d');
 const h3 = document.getElementById('name');
 const file = document.getElementById('file-input');
 
-const audioContext = new AudioContext();
-const src = audioContext.createMediaElementSource(audio);
-
 function init(source) {
   console.log('fired')
-  audio.src = undefined;
   audio.src = source;
 
+  const audioContext = new AudioContext();
   console.log(audio)
+  const src = audioContext.createMediaElementSource(audio);
   const analyser = audioContext.createAnalyser();
 
   src.connect(analyser);
