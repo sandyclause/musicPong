@@ -4,13 +4,15 @@ const ctx = canvas.getContext('2d');
 const h3 = document.getElementById('name');
 const file = document.getElementById('file-input');
 
+const audioContext = new AudioContext();
+const src = audioContext.createMediaElementSource(audio);
+
 function init(source) {
   console.log('fired')
+  audio.src = undefined;
   audio.src = source;
 
-  const audioContext = new AudioContext();
   console.log(audio)
-  const src = audioContext.createMediaElementSource(audio);
   const analyser = audioContext.createAnalyser();
 
   src.connect(analyser);
@@ -95,8 +97,7 @@ function init(source) {
 document.getElementById("listen").addEventListener("click", playAudio);
 
 async function playAudio() {
- 
-  var audio = document.createElement('audio');
+  let audio = document.createElement('audio');
 
   // Define the URL of the MP3 audio file
   audio.src = "http://sandytian.ca/audio/bensound-dubstep.mp3";
@@ -144,7 +145,7 @@ function drawPaddle() {
 document.addEventListener('keydown', (e) => {
   if (e.keyCode === 37) {
     leftArrow = true;
-  } else if (event.keyCode === 39) {
+  } else if (e.keyCode === 39) {
     rightArrow = true;
   }
 });
@@ -152,7 +153,7 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
   if (e.keyCode === 37) {
     leftArrow = false;
-  } else if (event.keyCode === 39) {
+  } else if (e.keyCode === 39) {
     rightArrow = false;
   }
 });
