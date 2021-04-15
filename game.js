@@ -5,11 +5,9 @@ const h3 = document.getElementById('name');
 const file = document.getElementById('file-input');
 
 function init(source) {
-  console.log('fired')
   audio.src = source;
 
   const audioContext = new AudioContext();
-  console.log(audio)
   const src = audioContext.createMediaElementSource(audio);
   const analyser = audioContext.createAnalyser();
 
@@ -20,7 +18,6 @@ function init(source) {
   const bufferLength = analyser.frequencyBinCount;
 
   const dataArray = new Uint8Array(bufferLength);
-  console.log('DATA-ARRAY: ', dataArray)
   
   let barHeight;
   let x = 0;
@@ -86,20 +83,24 @@ function init(source) {
     update();
   }
 
-  console.log(audio)
 
   audio.play();
   renderFrame();
 }
 
-document.getElementById("listen").addEventListener("click", playAudio);
+document.getElementById('listen').addEventListener('click', playAudio);
+document.getElementById('refresh').addEventListener('click', refreshPage);
+
+function refreshPage () {
+  location.reload();
+}
 
 async function playAudio() {
   let audio = document.createElement('audio');
 
   // Define the URL of the MP3 audio file
-  audio.src = "http://sandytian.ca/audio/bensound-dubstep.mp3";
-  const source = "http://sandytian.ca/audio/bensound-dubstep.mp3";
+  audio.src = 'http://sandytian.ca/audio/bensound-dubstep.mp3';
+  const source = 'http://sandytian.ca/audio/bensound-dubstep.mp3';
   
   // Once the metadata has been loaded
   audio.addEventListener('loadedmetadata', function(){
@@ -242,13 +243,10 @@ function update() {
 
 file.onchange = function() {
 
-  console.log(this.files)
 
   const files = this.files;
-  console.log('FILES[0]: ', files[0]);
   const source = URL.createObjectURL(files[0]);
 
-  console.log(files[0])
 
   const name = files[0].name;
   h3.innerText = `${name}`;
