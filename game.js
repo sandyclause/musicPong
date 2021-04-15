@@ -4,11 +4,24 @@ const ctx = canvas.getContext('2d');
 const h3 = document.getElementById('name');
 const file = document.getElementById('file-input');
 
+const MEDIA_ELEMENT_NODES = new WeakMap();
+
+let audioContext;
+
 function init(source) {
   audio.src = source;
+  
+  if (audioContext == undefined) {
+    audioContext = new AudioContext();
+  }
 
-  const audioContext = new AudioContext();
-  const src = audioContext.createMediaElementSource(audio);
+  if (MEDIA_ELEMENT_NODES.has(audio)) {
+    src = MEDIA_ELEMENT_NODES.get(audio);
+  } else {
+    src = audioContext.createMediaElementSource(audio);
+    MEDIA_ELEMENT_NODES.set(audio, src);
+  }
+
   const analyser = audioContext.createAnalyser();
 
   src.connect(analyser);
