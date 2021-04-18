@@ -101,19 +101,25 @@ function init(source) {
   renderFrame();
 }
 
-document.getElementById('listen').addEventListener('click', playAudio);
+document.getElementById('song1').addEventListener('click', () => playAudio('bensound-dubstep.mp3'));
+document.getElementById('song2').addEventListener('click', () => playAudio('bobbiebeatz242_ineedyou.mp3'));
+document.getElementById('song3').addEventListener('click', () => playAudio('hardheaded_godsoloved.mp3'));
 document.getElementById('refresh').addEventListener('click', refreshPage);
 
 function refreshPage () {
   location.reload();
 }
 
-async function playAudio() {
+function playAudio(fileName) {
+  if (!fileName) {
+    return;
+  }
+
   let audio = document.createElement('audio');
 
   // Define the URL of the MP3 audio file
-  audio.src = 'http://sandytian.ca/audio/bensound-dubstep.mp3';
-  const source = 'http://sandytian.ca/audio/bensound-dubstep.mp3';
+  audio.src =  `http://sandytian.ca/audio/${fileName}`;
+  const source =  `http://sandytian.ca/audio/${fileName}`;
   
   // Once the metadata has been loaded
   audio.addEventListener('loadedmetadata', function(){
